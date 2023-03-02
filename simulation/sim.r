@@ -1,5 +1,3 @@
-library(survival)
-library(MASS)
 source("../function/estBeta.r")
 
 generateData <- function(n, 

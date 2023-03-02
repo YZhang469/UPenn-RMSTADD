@@ -1,3 +1,6 @@
+library(MASS)
+source("../function/estBeta.r")
+
 ## simulation for the number of covariates > 10
 
 generateData.p <- function(n = 5000, p = 15){ # censor = 50%

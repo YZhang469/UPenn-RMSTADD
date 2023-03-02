@@ -1,5 +1,6 @@
 library(survival)
 library(MASS)
+source("../function/estBeta.r")
 
 generateData <- function(n, 
                          censor){ # censor can take values "15%", "30%", "45%", or "60%"
@@ -83,50 +84,7 @@ trueBeta <- function(L){ # L = 2nd and 3rd quantile
   return(list("beta" = beta, "mu0" = coef(mod)[1:43]))
 }
 
-estBeta <- function(dat, Xname = "X", deltaXname = "deltaX", Znames = c("Z1", "Z2"), strname = "age", L){
-  dat$Y <- apply(cbind(dat[, Xname], L), 1, min) # Yi = Di^Ci^L
-  dat$deltaY <- ifelse(dat[, deltaXname] == 1, 1, ifelse(L < dat[, Xname], 1, 0)) # delta_iki = I(Di^L <= Ci) = delta_i
-  modC <- coxph(as.formula(paste("Surv(", Xname, ", 1-", deltaXname, ") ~ ", paste0(Znames, collapse = " + "), " + strata(", strname, ")")), 
-                data = dat, ties = "breslow")
-  dat.new <- dat
-  dat.new[, Xname] <- dat.new$Y
-  dat$W <- dat$deltaY/predict(modC, newdata = dat.new, type = "survival")
-  n = nrow(dat)
-  p = length(Znames)
-  J = length(unique(dat[, strname]))
-  strvalue <- sort(unique(dat[, strname]))
-  Zbar <-  matrix(ncol = p, nrow = J)
-  for (j in 1:J){
-    Zbar[j, ] <- colSums(as.data.frame(dat[dat[, strname] == strvalue[j], Znames]) * dat$W[dat[, strname] == strvalue[j]]) / sum(dat$W[dat[, strname] == strvalue[j]])
-  }
-  Z <- dat[, Znames]
-  Zres <- Z - Zbar[match(dat[, strname], strvalue), ]
-  B <- apply(Zres * dat$W * dat$Y, 2, sum)
-  A <- matrix(0, ncol = p, nrow = p)
-  for (i in 1:n){
-    A = A + t(as.matrix(Zres[i, ])) %*% as.matrix(Zres[i, ]) * dat$W[i]
-  }
-  betahat <- solve(A) %*% B
-  mu0 <- rep(0, J)
-  for(j in 1:J){
-    dat.temp <- dat[dat[, strname] == strvalue[j], ]
-    mu0[j] <- sum(dat.temp$W * (dat.temp$Y - as.matrix(dat.temp[, Znames]) %*% betahat)) / sum(dat.temp$W)
-  }
-  Avar <- matrix(0, ncol = p, nrow = p)
-  for (i in 1:n){
-    Avar = Avar + t(as.matrix(Zres[i, ])) %*% as.matrix(Zres[i, ]) * dat$W[i] / n
-  }
-  Bvar <- matrix(0, ncol = p, nrow = p)
-  for (i in 1:nrow(Zres)){
-    temp <- Zres[i, ] * dat$W[i] * (dat$Y[i] - mu0[match(dat[i, strname], strvalue)] - as.matrix(Z[i, ]) %*% betahat)
-    Bvar = Bvar + t(as.matrix(temp)) %*% as.matrix(temp) / n
-  }
-  var <- diag(t(solve(Avar)) %*% Bvar %*% solve(Avar)) / n
-  
-  return(list("betahat" = betahat, "var" = var))
-}
-
-sim <- function(censor, L, ns = c(1250, 2500, 5000, 10000), n.sim = 500){
+sim <- function(censor, L, ns = c(1250, 2500, 5000, 10000), n.sim = 1000){
   beta <- trueBeta(L)$beta
   p <- length(beta)
   res <- data.frame(matrix(ncol = 8, nrow = length(ns)*p))
@@ -176,8 +134,8 @@ res.final <- data.frame()
 ns = c(1250,2500,5000,10000)
 Ls = c(2.5,5)
 for (k in 1:length(Ls)){
-  res.final <- rbind.data.frame(res.final, sim(censor = "15%", L = Ls[k], ns = ns, n.sim = 500))
-  res.final <- rbind.data.frame(res.final, sim(censor = "30%", L = Ls[k], ns = ns, n.sim = 500))
+  res.final <- rbind.data.frame(res.final, sim(censor = "15%", L = Ls[k], ns = ns, n.sim = 1000))
+  res.final <- rbind.data.frame(res.final, sim(censor = "30%", L = Ls[k], ns = ns, n.sim = 1000))
 }
 write.csv(res.final, "res_low.csv", row.names = FALSE)
 
@@ -187,7 +145,7 @@ res.final <- data.frame()
 ns = c(2500,5000,10000,20000)
 Ls = c(2.5,5)
 for (k in 1:length(Ls)){
-  res.final <- rbind.data.frame(res.final, sim(censor = "45%", L = Ls[k], ns = ns, n.sim = 500))
-  res.final <- rbind.data.frame(res.final, sim(censor = "60%", L = Ls[k], ns = ns, n.sim = 500))
+  res.final <- rbind.data.frame(res.final, sim(censor = "45%", L = Ls[k], ns = ns, n.sim = 1000))
+  res.final <- rbind.data.frame(res.final, sim(censor = "60%", L = Ls[k], ns = ns, n.sim = 1000))
 }
 write.csv(res.final, "res_high.csv", row.names = FALSE)

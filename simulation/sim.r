@@ -126,7 +126,7 @@ sim <- function(censor, L, ns = c(1250, 2500, 5000, 10000), n.sim = 1000){
   return(res)
 }
 
-# Table 1
+# low censoring
 set.seed(0227)
 res.final <- data.frame()
 ns = c(1250,2500,5000,10000)
@@ -137,7 +137,7 @@ for (k in 1:length(Ls)){
 }
 write.csv(res.final, "res_low.csv", row.names = FALSE)
 
-# Table 2
+# high censoring
 set.seed(0315)
 res.final <- data.frame()
 ns = c(2500,5000,10000,20000)

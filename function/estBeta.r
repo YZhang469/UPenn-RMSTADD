@@ -1,23 +1,23 @@
 estBeta <- function(dat, Xname = "X", deltaXname = "deltaX", Znames = c("Z1", "Z2"), strname = "age", L){
-  dat$Y <- apply(cbind(dat[, Xname], L), 1, min) # Yi = Di^Ci^L
-  dat$deltaY <- ifelse(dat[, deltaXname] == 1, 1, ifelse(L < dat[, Xname], 1, 0)) # delta_iki = I(Di^L <= Ci) = delta_i
+  dat$Y <- pmin(dat[[Xname]], L) # Yi = Di^Ci^L
+  dat$deltaY <- ifelse(dat[[deltaXname]] == 1, 1, ifelse(L < dat[[Xname]], 1, 0)) # delta_iki = I(Di^L <= Ci) = delta_i
   # remove strata with no events
-  dat <- dat[!dat[[strname]] %in% names(which(tapply(dat$deltaY, dat[, strname], sum) == 0)), ]
+  dat <- dat[!dat[[strname]] %in% names(which(tapply(dat$deltaY, dat[[strname]], sum) == 0)), ]
   modC <- coxph(as.formula(paste("Surv(", Xname, ", 1-", deltaXname, ") ~ ", paste0(Znames, collapse = " + "), " + strata(", strname, ")")), 
                 data = dat, ties = "breslow")
   dat.new <- dat
-  dat.new[, Xname] <- dat.new$Y
+  dat.new[[Xname]] <- dat.new$Y
   dat$W <- dat$deltaY/predict(modC, newdata = dat.new, type = "survival")
   n = nrow(dat)
   p = length(Znames)
-  J = length(unique(dat[, strname]))
-  strvalue <- sort(unique(dat[, strname]))
+  J = length(unique(dat[[strname]]))
+  strvalue <- unique(dat[[strname]])
   Zbar <-  matrix(ncol = p, nrow = J)
   for (j in 1:J){
-    Zbar[j, ] <- colSums(as.data.frame(dat[dat[, strname] == strvalue[j], Znames]) * dat$W[dat[, strname] == strvalue[j]]) / sum(dat$W[dat[, strname] == strvalue[j]])
+    Zbar[j, ] <- colSums(as.data.frame(dat[dat[[strname]] == strvalue[j], Znames]) * dat$W[dat[[strname]] == strvalue[j]]) / sum(dat$W[dat[[strname]] == strvalue[j]])
   }
   Z <- dat[, Znames]
-  Zres <- Z - Zbar[match(dat[, strname], strvalue), ]
+  Zres <- Z - Zbar[match(dat[[strname]], strvalue), ]
   B <- apply(Zres * dat$W * dat$Y, 2, sum)
   A <- matrix(0, ncol = p, nrow = p)
   for (i in 1:n){
@@ -26,7 +26,7 @@ estBeta <- function(dat, Xname = "X", deltaXname = "deltaX", Znames = c("Z1", "Z
   betahat <- solve(A) %*% B
   mu0 <- rep(0, J)
   for(j in 1:J){
-    dat.temp <- dat[dat[, strname] == strvalue[j], ]
+    dat.temp <- dat[dat[[strname]] == strvalue[j], ]
     mu0[j] <- sum(dat.temp$W * (dat.temp$Y - as.matrix(dat.temp[, Znames]) %*% betahat)) / sum(dat.temp$W)
   }
   Avar <- matrix(0, ncol = p, nrow = p)
@@ -35,10 +35,10 @@ estBeta <- function(dat, Xname = "X", deltaXname = "deltaX", Znames = c("Z1", "Z
   }
   Bvar <- matrix(0, ncol = p, nrow = p)
   for (i in 1:nrow(Zres)){
-    temp <- Zres[i, ] * dat$W[i] * (dat$Y[i] - mu0[match(dat[i, strname], strvalue)] - as.matrix(Z[i, ]) %*% betahat)
+    temp <- Zres[i, ] * dat$W[i] * (dat$Y[i] - mu0[match(dat[[strname]][i], strvalue)] - as.matrix(Z[i, ]) %*% betahat)
     Bvar = Bvar + t(as.matrix(temp)) %*% as.matrix(temp) / n
   }
   var <- diag(t(solve(Avar)) %*% Bvar %*% solve(Avar)) / n
   
-  return(list("betahat" = betahat, "var" = var))
+  return(list("betahat" = betahat, "var" = var, "mu0_df" = cbind.data.frame("stratum" = strvalue, "mu0" = mu0)))
 }

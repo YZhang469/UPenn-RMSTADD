@@ -100,7 +100,6 @@ sim.p <- function(L, p, n.sim = 1000){
   return(res)
 }
 
-set.seed(0408)
 res.final <- data.frame()
 Ls = c(2.5,5)
 for (k in 1:length(Ls)){

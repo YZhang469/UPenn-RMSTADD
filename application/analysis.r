@@ -36,6 +36,8 @@ res <- cbind.data.frame("est" = betahat, "se" = se, "p" = pnorm(-abs(betahat/se)
 write.csv(res, "res.csv", row.names = TRUE)
 
 ## histogram of mu0
+mu0_df <- est$mu0_df
+mu0 <- mu0_df$mu0
 png(file = "hist_mu0.png", width = 12, height = 10, units = "cm", res = 600)
 hist_mu0 <- hist(mu0/365, breaks = seq(floor(min(mu0/365)), ceiling(max(mu0/365)), 0.2))
 hist_mu0$density <- hist_mu0$counts/sum(hist_mu0$counts)*100

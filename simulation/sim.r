@@ -1,7 +1,7 @@
 source("../function/estBeta.r")
 
 generateData <- function(n, 
-                         censor){ # censor can take values "15%", "30%", "45%", or "60%"
+                         censor){ # censor can take values "25%", or "50%"
   
   # strata: age
   eta0j <- seq(2.40, 4.08, 0.04)  # corresponding to eta0j for ages 18-60
@@ -19,31 +19,17 @@ generateData <- function(n,
   D <- rexp(n, rate = 1/(eta0+alpha1*Z1+alpha2*Z2))
   
   # censoring times
-  if(censor == "15%"){
-    lambda0j <- seq(0.0184, 0.07, 0.0008)
+  if(censor == "25%"){
+    lambda0j <- seq(0.054, 0.096, 0.001)
     theta1 = 0.4
     theta2 = 0.1
     lambda = lambda0j[age-17] * exp(theta1*Z1+theta2*Z2)
     C <- rexp(n, rate = lambda)
   }
-  else if (censor == "30%"){
-    lambda0j <- seq(0.062, 0.160, 0.002)
+  else if (censor == "50%"){
+    lambda0j <- seq(0.15, 0.36, 0.005)
     theta1 = 0.2
     theta2 = -0.2
-    lambda = lambda0j[age-17] * exp(theta1*Z1+theta2*Z2)
-    C <- rexp(n, rate = lambda)
-  }
-  else if (censor == "45%"){
-    lambda0j <- seq(0.1, 0.31, 0.005)
-    theta1 = 0.3
-    theta2 = 0.2
-    lambda = lambda0j[age-17] * exp(theta1*Z1+theta2*Z2)
-    C <- rexp(n, rate = lambda)
-  }
-  else if (censor == "60%"){
-    lambda0j <- seq(0.125, 0.65, 0.0125)
-    theta1 = 0.4
-    theta2 = -0.4
     lambda = lambda0j[age-17] * exp(theta1*Z1+theta2*Z2)
     C <- rexp(n, rate = lambda)
   }
@@ -126,22 +112,11 @@ sim <- function(censor, L, ns = c(1250, 2500, 5000, 10000), n.sim = 1000){
   return(res)
 }
 
-# low censoring
 res.final <- data.frame()
 ns = c(1250,2500,5000,10000)
 Ls = c(2.5,5)
 for (k in 1:length(Ls)){
-  res.final <- rbind.data.frame(res.final, sim(censor = "15%", L = Ls[k], ns = ns, n.sim = 1000))
-  res.final <- rbind.data.frame(res.final, sim(censor = "30%", L = Ls[k], ns = ns, n.sim = 1000))
+  res.final <- rbind.data.frame(res.final, sim(censor = "25%", L = Ls[k], ns = ns, n.sim = 1000))
+  res.final <- rbind.data.frame(res.final, sim(censor = "50%", L = Ls[k], ns = ns, n.sim = 1000))
 }
 write.csv(res.final, "res_low.csv", row.names = FALSE)
-
-# high censoring
-res.final <- data.frame()
-ns = c(2500,5000,10000,20000)
-Ls = c(2.5,5)
-for (k in 1:length(Ls)){
-  res.final <- rbind.data.frame(res.final, sim(censor = "45%", L = Ls[k], ns = ns, n.sim = 1000))
-  res.final <- rbind.data.frame(res.final, sim(censor = "60%", L = Ls[k], ns = ns, n.sim = 1000))
-}
-write.csv(res.final, "res_high.csv", row.names = FALSE)

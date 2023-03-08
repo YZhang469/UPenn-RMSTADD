@@ -12,6 +12,7 @@ dat <- dat[!is.na(dat$don_bili), ]
 dat$stratum <- factor(paste(dat$CTR_CODE, ceiling(dat$AGE/10)*10, sep = "/"))
 # recode covariates
 dat$creat1_dialysis <- dat$creat1 * dat$dialysis
+dat$yr_lt <- dat$yr_lt - 2010
 dat$AGE_DON00 <- ifelse(dat$AGE_DON <= 20, 1, 0)
 dat$AGE_DON20 <- ifelse(dat$AGE_DON > 20 & dat$AGE_DON <= 40, 1, 0) # reference
 dat$AGE_DON40 <- ifelse(dat$AGE_DON > 40 & dat$AGE_DON <= 60, 1, 0)
@@ -21,6 +22,7 @@ dat$don_wgt1 <- (dat$don_wgt-80)/10 # kg
 
 Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
+            "yr_lt", 
             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
             "don_cod_anoxia", "don_cod_cva", "don_cod_other", 

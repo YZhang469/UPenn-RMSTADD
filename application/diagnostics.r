@@ -109,6 +109,7 @@ CV <- function(dat, Znames, L = 5*365, K = 2){
   dat <- dat[!dat$stratum %in% names(which(tapply(dat$deltaY, dat$stratum, sum) < K)), ]
   
   dat$creat1_dialysis <- dat$creat1 * dat$dialysis
+  dat$yr_lt <- dat$yr_lt - 2010
   # donor age group, 1: 12-20, 2: 21-40, 3: 41-60, 4: 61-92
   dat$AGE_DON00 <- ifelse(dat$AGE_DON <= 20, 1, 0)
   dat$AGE_DON20 <- ifelse(dat$AGE_DON > 20 & dat$AGE_DON <= 40, 1, 0) # reference
@@ -171,6 +172,7 @@ CV <- function(dat, Znames, L = 5*365, K = 2){
 ## results
 Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
+            "yr_lt", 
             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
             "don_cod_anoxia", "don_cod_cva", "don_cod_other", 

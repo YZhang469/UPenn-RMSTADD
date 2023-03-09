@@ -10,9 +10,7 @@ dat <- dat[dat$status_1 == 0 & dat$AGE_DON >= 12, ]
 dat <- dat[!is.na(dat$don_bili), ]
 
 ## functions
-estStrAddModel <- function(dat, Znames){
-  modC <- coxph(as.formula(paste("Surv(X, 1-GF) ~ ", paste0(Znames, collapse = " + "), " + strata(stratum)", sep = "")), 
-                data = dat, ties = "breslow")
+estStrAddModel <- function(dat, Znames, modC){
   dat.new <- dat
   dat.new$X <- dat.new$Y
   dat$W <- dat$deltaY/predict(modC, newdata = dat.new, type = "survival")
@@ -39,12 +37,10 @@ estStrAddModel <- function(dat, Znames){
   }
   mu0_df <- cbind.data.frame("stratum" = unique(dat$stratum), "mu0" = mu0)
   
-  return(list("betahat" = betahat, "mu0hat" = mu0_df, "modC" = modC))
+  return(list("betahat" = betahat, "mu0hat" = mu0_df))
 }
 
-estStrMultModel <- function(dat, Znames){
-  modC <- coxph(as.formula(paste("Surv(X, 1-GF) ~ ", paste0(Znames, collapse = " + "), " + strata(stratum)", sep = "")), 
-                data = dat, ties = "breslow")
+estStrMultModel <- function(dat, Znames, modC){
   dat.new <- dat
   dat.new$X <- dat.new$Y
   dat.new$W <- 1/predict(modC, newdata = dat.new, type = "survival")
@@ -59,7 +55,7 @@ estStrMultModel <- function(dat, Znames){
   mu0 <- num/denom
   mu0_df <- cbind.data.frame("stratum" = unique(dat.new$stratum), "mu0" = mu0[!is.na(mu0)])
   
-  return(list("betahat" = betahat, "mu0hat" = mu0_df, "modC" = modC))
+  return(list("betahat" = betahat, "mu0hat" = mu0_df))
 }
 
 IOC <- function(predicted, time, event, dat, modC, method){ # method = "Harrell" or "Uno" (with IPTW)
@@ -94,7 +90,7 @@ brier_rmst <- function(predicted, dat, modC, L){
 }
 
 ## k-fold cross-validation
-CV <- function(dat, Znames, L = 5*365, K = 2){
+CV <- function(dat, Znames, ZCnames, L = 5*365, K = 2){
   
   # c-index
   c <- data.frame(matrix(nrow = K, ncol = 4))
@@ -131,16 +127,17 @@ CV <- function(dat, Znames, L = 5*365, K = 2){
     Z.test <- test[, Znames]
     
     # stratified additive model
-    est <- estStrAddModel(train, Znames)
+    modC <- coxph(as.formula(paste("Surv(X, 1-GF) ~ ", paste0(ZCnames, collapse = " + "), " + strata(stratum)", sep = "")), 
+                  data = dat, ties = "breslow")
+    est <- estStrAddModel(train, Znames, modC)
     betahat <- est$betahat
     mu0_df <- est$mu0hat
-    modC <- est$modC
     Yhat <- mu0_df$mu0[match(test$stratum, mu0_df$stratum)] + as.matrix(Z.test) %*% betahat
     c[k,1] <- IOC(Yhat, test$Y, test$deltaY, test, modC, "Harrell")
     b[k,1] <- brier_rmst(Yhat, test, modC, L)/(365^2)
     
     # additive model without stratification (weighted least squares regression)
-    modC.nonstrat <- coxph(as.formula(paste("Surv(X, 1-GF) ~ ", paste0(Znames, collapse = " + "), sep = "")), 
+    modC.nonstrat <- coxph(as.formula(paste("Surv(X, 1-GF) ~ ", paste0(ZCnames, collapse = " + "), sep = "")), 
                            data = train, ties = "breslow")
     weights.nonstrat <- train$deltaY/predict(modC.nonstrat, newdata = train, type = "survival")
     mod.nonstrat <- lm(as.formula(paste("Y ~ ", paste(Znames, collapse = " + "))), data = train, weights = weights.nonstrat)
@@ -149,13 +146,12 @@ CV <- function(dat, Znames, L = 5*365, K = 2){
     b[k,2] <- brier_rmst(Yhat.nonstrat, test, modC.nonstrat, L)/(365^2)
     
     # multiplicative model with stratification (Wang et al., 2019)
-    est.mult <- estStrMultModel(train, Znames)
+    est.mult <- estStrMultModel(train, Znames, modC)
     betahat.mult <- est.mult$betahat
     mu0_df.mult <- est.mult$mu0hat
-    modC.mult <- est.mult$modC
     Yhat.mult <- mu0_df.mult$mu0[match(test$stratum, mu0_df$stratum)] + as.matrix(Z.test) %*% betahat.mult
     c[k,3] <- IOC(Yhat.mult, test$Y, test$deltaY, test, modC.mult, "Harrell")
-    b[k,3] <- brier_rmst(Yhat.mult, test, modC.mult, L)/(365^2)
+    b[k,3] <- brier_rmst(Yhat.mult, test, modC, L)/(365^2)
     
     # cox model: calculate RMST or assess hazards directly
     mod.coxph <- coxph(as.formula(paste("Surv(X, GF) ~ ", paste(Znames, collapse = " + "))), data = train)
@@ -171,6 +167,15 @@ CV <- function(dat, Znames, L = 5*365, K = 2){
 
 ## results
 Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
+            "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
+            "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
+            "AGE_DON00", "AGE_DON40", "AGE_DON60", 
+            "don_cod_anoxia", "don_cod_cva", "don_cod_other", 
+            "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
+            "don_creat", "don_partsplit", 
+            "abo_mat2", # perfect match between donor and recipient
+            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
+ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
             "yr_lt", 
             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate

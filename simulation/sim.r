@@ -84,7 +84,7 @@ sim <- function(censor, L, ns = c(1250, 2500, 5000, 10000), n.sim = 1000){
     cover <- data.frame(matrix(ncol = p, nrow = n.sim))
     for (iter in 1:n.sim){
       dat <- generateData(n = ns[s], censor = censor)
-      res.temp <- estBeta(dat, Xname = "X", deltaXname = "deltaX", Znames = c("Z1", "Z2"), strname = "age", L = L)
+      res.temp <- estBeta(dat, Xname = "X", deltaXname = "deltaX", Znames = c("Z1", "Z2"), ZCnames = c("Z1", "Z2"), strname = "age", L = L)
       betahat <- res.temp$betahat
       var <- res.temp$var
       ci <- ifelse(beta > betahat-1.96*sqrt(var) & beta < betahat+1.96*sqrt(var), 1, 0)

@@ -1,9 +1,9 @@
-estBeta <- function(dat, Xname, deltaXname, Znames, strname, L){
+estBeta <- function(dat, Xname = "X", deltaXname = "deltaX", Znames = c("Z1", "Z2"), ZCnames = c("Z1", "Z2"), strname = "age", L){
   dat$Y <- pmin(dat[[Xname]], L) # Yi = Di^Ci^L
   dat$deltaY <- ifelse(dat[[deltaXname]] == 1, 1, ifelse(L < dat[[Xname]], 1, 0)) # delta_iki = I(Di^L <= Ci) = delta_i
   # remove strata with no events
   dat <- dat[!dat[[strname]] %in% names(which(tapply(dat$deltaY, dat[[strname]], sum) == 0)), ]
-  modC <- coxph(as.formula(paste("Surv(", Xname, ", 1-", deltaXname, ") ~ ", paste0(Znames, collapse = " + "), " + strata(", strname, ")")), 
+  modC <- coxph(as.formula(paste("Surv(", Xname, ", 1-", deltaXname, ") ~ ", paste0(ZCnames, collapse = " + "), " + strata(", strname, ")")), 
                 data = dat, ties = "breslow")
   dat.new <- dat
   dat.new[[Xname]] <- dat.new$Y

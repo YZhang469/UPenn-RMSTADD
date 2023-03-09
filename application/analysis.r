@@ -22,7 +22,6 @@ dat$don_wgt1 <- (dat$don_wgt-80)/10 # kg
 
 Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
-            "yr_lt", 
             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
             "don_cod_anoxia", "don_cod_cva", "don_cod_other", 
@@ -30,8 +29,18 @@ Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albu
             "don_creat", "don_partsplit", 
             "abo_mat2", # perfect match between donor and recipient
             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
+ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
+             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
+             "yr_lt", 
+             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
+             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
+             "don_cod_anoxia", "don_cod_cva", "don_cod_other", 
+             "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
+             "don_creat", "don_partsplit", 
+             "abo_mat2", # perfect match between donor and recipient
+             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
 
-est <- estBeta(dat = dat, Xname = "X", deltaXname = "GF", Znames = Znames, strname = "stratum", L = 5*365)
+est <- estBeta(dat = dat, Xname = "X", deltaXname = "GF", Znames = Znames, ZCnames = ZCnames, strname = "stratum", L = 5*365)
 betahat <- est$betahat
 se <- sqrt(est$var)
 res <- cbind.data.frame("est" = betahat, "se" = se, "p" = pnorm(-abs(betahat/se), mean = 0, sd = 1, lower.tail = TRUE) * 2)

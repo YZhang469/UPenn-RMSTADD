@@ -72,7 +72,9 @@ sim.p <- function(L, p, n.sim = 1000){
   cover <- data.frame(matrix(ncol = p, nrow = n.sim))
   for (iter in 1:n.sim){
     dat <- generateData.p(n = 5000, p = p)
-    res.temp <- estBeta(dat, Xname = "X", deltaXname = "deltaX", Znames = paste("Z", 1:p, sep = ""), strname = "age", L = L)
+    res.temp <- estBeta(dat, Xname = "X", deltaXname = "deltaX", 
+                        Znames = paste("Z", 1:p, sep = ""), ZCnames = paste("Z", 1:p, sep = ""), 
+                        strname = "age", L = L)
     betahat <- res.temp$betahat
     var <- res.temp$var
     ci <- ifelse(beta > betahat-1.96*sqrt(var) & beta < betahat+1.96*sqrt(var), 1, 0)

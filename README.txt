@@ -36,7 +36,7 @@ loaded via a namespace (and not attached):
 [33] pillar_1.8.1     generics_0.1.3   scales_1.2.1     forcats_0.5.2   
 [37] pkgconfig_2.0.3 
 
-Simulations (UPenn-RMSTsa/simulation) were run on in parallel on a Linux server with software information:
+Simulations (./simulation) were run in parallel on a Linux server with software information:
 R version 4.2.2 (2022-10-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: CentOS Linux 7 (Core)
@@ -70,3 +70,15 @@ loaded via a namespace (and not attached):
 [25] pillar_1.8.1     forcats_0.5.2    generics_0.1.3   scales_1.2.1
 [29] pkgconfig_2.0.3
 
+This folder comprises three subfolders which contain the following files that can be used to reproduce all analysis results, tables, and figures of the manuscript:
+
+./application/: A subfolder containing all scripts for data analysis reported in the manuscript (Section 5) and in the supplementary material (Appendix C)
+analysis.r: An R script that performs the main data analysis, including generating the estimates of covariate effects with standard error and p-value (Table 3) and plotting the histogram of baseline mean RMST mu0's (Figures 1 and 2). To generate results in the supplementary material (Appendix C), change the parameter value L = 5*365 in the function "estBeta()" to L = 1*365 and L = 3*365 for 1-year RMST and 3-year RMST, respectively.
+diagnostics.r: An R script that calculates C-statistic and Brier score of our proposed method and compare them with those of the additive RMST model, the stratified multiplicative RMST model and the Cox PH model (Table 4).
+
+./function/: A subfolder containing a file "estBeta.r" which calls the estimating function "estBeta()". The files in both "./application" and "./simulation" folders source this file.
+
+./simulation/: A subfolder containing all scripts for simulation studies reported in the manuscript (Section 4) and in the supplementary material (Appendix B)
+sim.r: An R script that performs the main simulation study (Table 1).
+sim_sensitivity.r: An R script that performs the sensitivity analysis (Table 2).
+sim_supp.r: An R script that performs the simulation study with a considerably large number of covariates (Appendix B).

@@ -192,4 +192,4 @@ score_1 <- CV(dat, Znames, L = 365, K = 2)
 diag <- cbind.data.frame("Metric" = rep(c("C", "B"), each = 3), "L" = rep(c(5,3,1), 2), 
                          rbind.data.frame(score_5$c, score_3$c, score_1$c, 
                                           score_5$b, score_3$b, score_1$b))
-write.csv(diag, "./results/diag.csv", row.names = FALSE)
+write.csv(diag, "./results/Table4.csv", row.names = FALSE)

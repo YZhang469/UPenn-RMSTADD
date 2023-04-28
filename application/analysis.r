@@ -65,3 +65,15 @@ ggplot(mu0_df[!mu0_df$age %in% c("11 - 20", "81 - 90"), ], aes(x = mu0/365)) +
   facet_wrap(~ age, ncol = 2) + 
   labs(y = "Count", x = expression(paste(hat(mu)[0], " (years)")), fill = "Age")
 dev.off()
+
+## supplementary data analysis
+est <- estBeta(dat = dat, Xname = "X", deltaXname = "GF", Znames = Znames, ZCnames = ZCnames, strname = "stratum", L = 1*365)
+betahat <- est$betahat
+se <- sqrt(est$var)
+res <- cbind.data.frame("est" = betahat, "se" = se, "p" = pnorm(-abs(betahat/se), mean = 0, sd = 1, lower.tail = TRUE) * 2)
+write.csv(res, "./results/TableC1_1.csv", row.names = TRUE)
+est <- estBeta(dat = dat, Xname = "X", deltaXname = "GF", Znames = Znames, ZCnames = ZCnames, strname = "stratum", L = 3*365)
+betahat <- est$betahat
+se <- sqrt(est$var)
+res <- cbind.data.frame("est" = betahat, "se" = se, "p" = pnorm(-abs(betahat/se), mean = 0, sd = 1, lower.tail = TRUE) * 2)
+write.csv(res, "./results/TableC1_3.csv", row.names = TRUE)

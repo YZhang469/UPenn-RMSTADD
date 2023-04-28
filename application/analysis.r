@@ -76,4 +76,4 @@ est <- estBeta(dat = dat, Xname = "X", deltaXname = "GF", Znames = Znames, ZCnam
 betahat <- est$betahat
 se <- sqrt(est$var)
 res <- cbind.data.frame("est" = betahat, "se" = se, "p" = pnorm(-abs(betahat/se), mean = 0, sd = 1, lower.tail = TRUE) * 2)
-write.csv(res, "../results/TableC1_3.csv", row.names = TRUE)
+write.csv(res, "./results/TableC1_3.csv", row.names = TRUE)

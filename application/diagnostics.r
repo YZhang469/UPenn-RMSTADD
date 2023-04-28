@@ -186,6 +186,7 @@ ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "alb
             "abo_mat2", # perfect match between donor and recipient
             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
 
+set.seed(0715)
 score_5 <- CV(dat, Znames, L = 5*365, K = 2)
 score_3 <- CV(dat, Znames, L = 3*365, K = 2)
 score_1 <- CV(dat, Znames, L = 365, K = 2)

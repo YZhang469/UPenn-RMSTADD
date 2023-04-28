@@ -189,3 +189,6 @@ ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "alb
 score_5 <- CV(dat, Znames, L = 5*365, K = 2)
 score_3 <- CV(dat, Znames, L = 3*365, K = 2)
 score_1 <- CV(dat, Znames, L = 365, K = 2)
+cbind.data.frame("Metric" = rep(c("C", "B"), each = 3), "L" = rep(c(5,3,1), 2), 
+                 rbind.data.frame(score_5$c, score_3$c, score_1$c, 
+                                  score_5$b, score_3$b, score_1$b))

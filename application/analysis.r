@@ -2,7 +2,7 @@ library(haven)
 library(survival)
 library(ggplot2)
 
-source("../function/estBeta.r")
+source("./function/estBeta.r")
 
 ## data cleaning
 dat <- read_sas("postlt_yuan_15jul2022.sas7bdat")
@@ -44,12 +44,12 @@ est <- estBeta(dat = dat, Xname = "X", deltaXname = "GF", Znames = Znames, ZCnam
 betahat <- est$betahat
 se <- sqrt(est$var)
 res <- cbind.data.frame("est" = betahat, "se" = se, "p" = pnorm(-abs(betahat/se), mean = 0, sd = 1, lower.tail = TRUE) * 2)
-write.csv(res, "../results/Table3.csv", row.names = TRUE)
+write.csv(res, "./results/Table3.csv", row.names = TRUE)
 
 ## histogram of mu0
 mu0_df <- est$mu0_df
 mu0 <- mu0_df$mu0
-png(file = "../results/Figure1.png", width = 12, height = 10, units = "cm", res = 600)
+png(file = "./results/Figure1.png", width = 12, height = 10, units = "cm", res = 600)
 hist_mu0 <- hist(mu0/365, breaks = seq(floor(min(mu0/365)), ceiling(max(mu0/365)), 0.2))
 hist_mu0$density <- hist_mu0$counts/sum(hist_mu0$counts)*100
 plot(hist_mu0, freq = FALSE, ylab = "Proportion (%)", xlab = expression(paste(hat(mu)[0], " (years)")), main = "", 
@@ -59,7 +59,7 @@ mu0_df$age <- sub(".*/", "", mu0_df$stratum)
 mu0_df$age <- paste(as.numeric(mu0_df$age) - 9, mu0_df$age, sep = " - ")
 mu0_df$center <- sub("/.*", "", mu0_df$stratum)
 # by age
-png(file = "../results/Figure2.png", width = 12, height = 18, units = "cm", res = 600)
+png(file = "./results/Figure2.png", width = 12, height = 18, units = "cm", res = 600)
 ggplot(mu0_df[!mu0_df$age %in% c("11 - 20", "81 - 90"), ], aes(x = mu0/365)) + 
   geom_histogram(color = "black", fill = "lightblue") + 
   facet_wrap(~ age, ncol = 2) + 

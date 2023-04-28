@@ -112,6 +112,7 @@ sim <- function(censor, L, ns = c(1250, 2500, 5000, 10000), n.sim = 1000){
   return(res)
 }
 
+set.seed(0227)
 res.final <- data.frame()
 ns = c(1250,2500,5000,10000)
 Ls = c(2.5,5)

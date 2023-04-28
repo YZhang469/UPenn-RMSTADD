@@ -1,4 +1,4 @@
-source("../function/estBeta.r")
+source("./function/estBeta.r")
 
 generateData <- function(n, 
                          censor){ # censor can take values "25%", or "50%"
@@ -119,4 +119,4 @@ for (k in 1:length(Ls)){
   res.final <- rbind.data.frame(res.final, sim(censor = "25%", L = Ls[k], ns = ns, n.sim = 1000))
   res.final <- rbind.data.frame(res.final, sim(censor = "50%", L = Ls[k], ns = ns, n.sim = 1000))
 }
-write.csv(res.final, "../results/Table1.csv", row.names = FALSE)
+write.csv(res.final, "./results/Table1.csv", row.names = FALSE)

@@ -1,5 +1,5 @@
 library(MASS)
-source("../function/estBeta.r")
+source("./function/estBeta.r")
 
 ## simulation for the number of covariates > 10
 
@@ -107,4 +107,4 @@ Ls = c(2.5,5)
 for (k in 1:length(Ls)){
   res.final <- rbind.data.frame(res.final, sim.p(L = Ls[k], p = 15, n.sim = 1000))
 }
-write.csv(res.final, "../results/TableB1.csv", row.names = FALSE)
+write.csv(res.final, "./results/TableB1.csv", row.names = FALSE)

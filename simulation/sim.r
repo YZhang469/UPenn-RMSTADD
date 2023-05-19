@@ -1,3 +1,5 @@
+library(survival)
+
 source("../function/estBeta.r")
 
 generateData <- function(n, 

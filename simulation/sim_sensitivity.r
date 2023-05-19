@@ -1,4 +1,4 @@
-source("./function/estBeta.r")
+source("../function/estBeta.r")
 
 generateData.nphC <- function(n, 
                               censor){
@@ -123,4 +123,4 @@ for (k in 1:length(Ls)){
   res.final <- rbind.data.frame(res.final, sim.nphC(censor = "25%", L = Ls[k], ns = ns, n.sim = 1000))
   res.final <- rbind.data.frame(res.final, sim.nphC(censor = "50%", L = Ls[k], ns = ns, n.sim = 1000))
 }
-write.csv(res.final, "./results/Table2.csv", row.names = FALSE)
+write.csv(res.final, "../results/Table2.csv", row.names = FALSE)

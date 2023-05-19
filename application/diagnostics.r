@@ -5,7 +5,7 @@ library(dplyr)
 library(survRM2)
 
 ## data cleaning
-dat <- read_sas("postlt_yuan_15jul2022.sas7bdat")
+dat <- read_sas("biomj_postlt.sas7bdat")
 dat <- dat[dat$status_1 == 0 & dat$AGE_DON >= 12, ]
 dat <- dat[!is.na(dat$don_bili), ]
 

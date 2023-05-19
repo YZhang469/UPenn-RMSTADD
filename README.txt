@@ -82,7 +82,7 @@ This folder comprises three subfolders which contain the following files that ca
   A subfolder containing a file "estBeta.r" which calls the estimating function "estBeta()". The files in both "./application" and "./simulation" folders source this file.
 
 ./results/:
-  A subfolder containing all simulation and data analysis results.
+  A subfolder containing all simulation and simulated data analysis results.
 
 ./simulation/:
   A subfolder containing all scripts for simulation studies reported in the manuscript (Section 4) and in the supplementary material (Appendix B).

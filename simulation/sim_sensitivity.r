@@ -1,4 +1,5 @@
 library(survival)
+
 source("../function/estBeta.r")
 
 generateData.nphC <- function(n, 

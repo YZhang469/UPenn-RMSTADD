@@ -6,13 +6,10 @@ source("../function/estBeta.r")
 
 ## data cleaning
 dat <- read_sas("biomj_postlt.sas7bdat")
-dat <- dat[dat$status_1 == 0 & dat$AGE_DON >= 12, ]
-dat <- dat[!is.na(dat$don_bili), ]
 # define stratum = age * center
-dat$stratum <- factor(paste(dat$CTR_CODE, ceiling(dat$AGE/10)*10, sep = "/"))
+dat$stratum <- factor(paste(dat$crt_num, ceiling(dat$AGE/10)*10, sep = "/"))
 # recode covariates
 dat$creat1_dialysis <- dat$creat1 * dat$dialysis
-dat$yr_lt <- dat$yr_lt - 2010
 dat$AGE_DON00 <- ifelse(dat$AGE_DON <= 20, 1, 0)
 dat$AGE_DON20 <- ifelse(dat$AGE_DON > 20 & dat$AGE_DON <= 40, 1, 0) # reference
 dat$AGE_DON40 <- ifelse(dat$AGE_DON > 40 & dat$AGE_DON <= 60, 1, 0)
@@ -24,21 +21,21 @@ Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albu
             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
-            "don_cod_anoxia", "don_cod_cva", "don_cod_other", 
+            "don_cod_anoxia", "don_cod_cva", "don_cod_other", # reference: don_cod_trauma
             "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
             "don_creat", "don_partsplit", 
             "abo_mat2", # perfect match between donor and recipient
-            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
+            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
 ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
              "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
-             "yr_lt", 
+             "yrs_wl1", 
              "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
              "AGE_DON00", "AGE_DON40", "AGE_DON60", 
-             "don_cod_anoxia", "don_cod_cva", "don_cod_other", 
+             "don_cod_anoxia", "don_cod_cva", "don_cod_other", # reference: don_cod_trauma
              "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
              "don_creat", "don_partsplit", 
              "abo_mat2", # perfect match between donor and recipient
-             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
+             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
 
 est <- estBeta(dat = dat, Xname = "X", deltaXname = "GF", Znames = Znames, ZCnames = ZCnames, strname = "stratum", L = 5*365)
 betahat <- est$betahat

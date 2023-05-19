@@ -6,8 +6,6 @@ library(survRM2)
 
 ## data cleaning
 dat <- read_sas("biomj_postlt.sas7bdat")
-dat <- dat[dat$status_1 == 0 & dat$AGE_DON >= 12, ]
-dat <- dat[!is.na(dat$don_bili), ]
 
 ## functions
 estStrAddModel <- function(dat, Znames, modC){
@@ -101,11 +99,9 @@ CV <- function(dat, Znames, ZCnames, L = 5*365, K = 2){
   # data
   dat$Y <- apply(cbind(dat$X, L), 1, min) # Yi = Di^Ci^L
   dat$deltaY <- ifelse(dat$GF == 1, 1, ifelse(L < dat$X, 1, 0)) # deltaY_i = I(Di^L <= Ci)
-  dat$stratum <- factor(paste(dat$CTR_CODE, ceiling(dat$AGE/10)*10, sep = "/"))
+  dat$stratum <- factor(paste(dat$ctr_num, ceiling(dat$AGE/10)*10, sep = "/"))
   dat <- dat[!dat$stratum %in% names(which(tapply(dat$deltaY, dat$stratum, sum) < K)), ]
-  
   dat$creat1_dialysis <- dat$creat1 * dat$dialysis
-  dat$yr_lt <- dat$yr_lt - 2010
   # donor age group, 1: 12-20, 2: 21-40, 3: 41-60, 4: 61-92
   dat$AGE_DON00 <- ifelse(dat$AGE_DON <= 20, 1, 0)
   dat$AGE_DON20 <- ifelse(dat$AGE_DON > 20 & dat$AGE_DON <= 40, 1, 0) # reference
@@ -170,27 +166,27 @@ Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albu
             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
-            "don_cod_anoxia", "don_cod_cva", "don_cod_other", 
+            "don_cod_anoxia", "don_cod_cva", "don_cod_other", # reference: don_cod_trauma
             "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
             "don_creat", "don_partsplit", 
             "abo_mat2", # perfect match between donor and recipient
-            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
+            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
 ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
-            "yr_lt", 
+            "yrs_wl1", 
             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
-            "don_cod_anoxia", "don_cod_cva", "don_cod_other", 
+            "don_cod_anoxia", "don_cod_cva", "don_cod_other", # reference: don_cod_trauma
             "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
             "don_creat", "don_partsplit", 
             "abo_mat2", # perfect match between donor and recipient
-            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos") # hypothesis on the effect of DposRneg
+            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
 
 set.seed(0715)
-score_5 <- CV(dat, Znames, L = 5*365, K = 2)
-score_3 <- CV(dat, Znames, L = 3*365, K = 2)
-score_1 <- CV(dat, Znames, L = 365, K = 2)
+score_5 <- CV(dat, Znames, ZCnames, L = 5*365, K = 2)
+score_3 <- CV(dat, Znames, ZCnames, L = 3*365, K = 2)
+score_1 <- CV(dat, Znames, ZCnames, L = 365, K = 2)
 diag <- cbind.data.frame("Metric" = rep(c("C", "B"), each = 3), "L" = rep(c(5,3,1), 2), 
                          rbind(score_5$c, score_3$c, score_1$c, 
                                score_5$b, score_3$b, score_1$b))
-write.csv(diag, "./results/Table4.csv", row.names = FALSE)
+write.csv(diag, "../results/Table4.csv", row.names = FALSE)

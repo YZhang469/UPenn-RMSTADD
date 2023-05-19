@@ -1,4 +1,6 @@
 library(MASS)
+library(survival)
+
 source("./function/estBeta.r")
 
 ## simulation for the number of covariates > 10

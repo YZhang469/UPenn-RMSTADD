@@ -28,7 +28,7 @@ Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albu
             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
 ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
              "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
-             "yrs_wl1", 
+             "yr_lt", 
              "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
              "AGE_DON00", "AGE_DON40", "AGE_DON60", 
              "don_cod_anoxia", "don_cod_cva", "don_cod_other", # reference: don_cod_trauma

@@ -172,15 +172,15 @@ Znames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albu
             "abo_mat2", # perfect match between donor and recipient
             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
 ZCnames <- c("female", "dialysis", "creat1", "creat1_dialysis", "diabetes", "albumin3", "working_lt", # recipient covariate (age as stratum)
-            "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
-            "yrs_wl1", 
-            "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
-            "AGE_DON00", "AGE_DON40", "AGE_DON60", 
-            "don_cod_anoxia", "don_cod_cva", "don_cod_other", # reference: don_cod_trauma
-            "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
-            "don_creat", "don_partsplit", 
-            "abo_mat2", # perfect match between donor and recipient
-            "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
+             "diag_HCV", "diag_ahn", "diag_chol_cirr", "diag_mal_neo", "diag_met_dis", # reference: diag_nonchol_cirr
+             "yr_lt", 
+             "don_female", "don_Black", "don_hisp", "don_Asian", # donor covariate
+             "AGE_DON00", "AGE_DON40", "AGE_DON60", 
+             "don_cod_anoxia", "don_cod_cva", "don_cod_other", # reference: don_cod_trauma
+             "don_DCD", "don_hgt1", "don_wgt1", "don_smoke", "don_coke", 
+             "don_creat", "don_partsplit", 
+             "abo_mat2", # perfect match between donor and recipient
+             "cmv_DposRneg", "cmv_DposRpos", "cmv_DnegRpos")
 
 set.seed(0715)
 score_5 <- CV(dat, Znames, ZCnames, L = 5*365, K = 2)

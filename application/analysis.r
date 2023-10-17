@@ -74,3 +74,10 @@ betahat <- est$betahat
 se <- sqrt(est$var)
 res <- cbind.data.frame("est" = betahat, "se" = se, "p" = pnorm(-abs(betahat/se), mean = 0, sd = 1, lower.tail = TRUE) * 2)
 write.csv(res, "../results/TableC1_3.csv", row.names = TRUE)
+
+dat$Y <- pmin(dat$X, L) # Yi = Di^Ci^L
+dat$deltaY <- ifelse(dat$GF == 1, 1, ifelse(L < dat$X, 1, 0)) # delta_iki = I(Di^L <= Ci) = delta_i
+dat <- dat[!dat$stratum %in% names(which(tapply(dat$deltaY, dat$stratum, sum) == 0)), ]
+modC <- coxph(as.formula(paste("Surv(X, 1-GF) ~ ", paste0(ZCnames, collapse = " + "), " + strata(stratum)")), 
+              data = dat, ties = "breslow")
+write.csv(summary(modC)$coefficients, "../results/TableC2.csv")

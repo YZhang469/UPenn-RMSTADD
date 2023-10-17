@@ -75,7 +75,7 @@ This folder comprises three subfolders which contain the following files that ca
 ./application/:
   A subfolder containing all scripts for data analysis reported in the manuscript (Section 5) and in the supplementary material (Appendix C).
   * biomj_postlt.sas7bdat: A simulated data set that has a similar structure to the liver transplant data analyzed in our manuscript.
-  * analysis.r: An R script that performs the main data analysis, including generating the estimates of covariate effects with standard error and p-value (Table 3) and plotting the histogram of baseline mean RMST mu0's (Figures 1 and 2). To generate results in the supplementary material (Appendix C, Table C.1), change the parameter value L =  5*365 in the function "estBeta()" to L = 1*365 and L = 3*365 for 1-year RMST and 3-year RMST, respectively.
+  * analysis.r: An R script that performs the main data analysis, including generating the estimates of covariate effects with standard error and p-value (Table 3) and plotting the histogram of baseline mean RMST mu0's (Figures 1 and 2). To generate results in the supplementary material (Appendix C, Table C.1), change the parameter value L =  5*365 in the function "estBeta()" to L = 1*365 and L = 3*365 for 1-year RMST and 3-year RMST, respectively. Table C.2 summarizes the coefficient output of the censoring model.
   * diagnostics.r: An R script that calculates C-statistic and Brier score of our proposed method and compare them with those of the additive RMST model, the stratified multiplicative RMST model and the Cox PH model (Table 4).
 
 ./function/:

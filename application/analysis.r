@@ -7,7 +7,7 @@ source("../function/estBeta.r")
 ## data cleaning
 dat <- read_sas("biomj_postlt.sas7bdat")
 # define stratum = age * center
-dat$stratum <- factor(paste(dat$crt_num, ceiling(dat$AGE/10)*10, sep = "/"))
+dat$stratum <- factor(paste(dat$ctr_num, ceiling(dat$AGE/10)*10, sep = "/"))
 # recode covariates
 dat$creat1_dialysis <- dat$creat1 * dat$dialysis
 dat$AGE_DON00 <- ifelse(dat$AGE_DON <= 20, 1, 0)

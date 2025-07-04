@@ -1,7 +1,7 @@
 Supplementary information / reproducible research files for the manuscript titled "Semiparametric Additive Modeling of the Restricted Mean Survival Time"
 
 Authors: Y. Zhang and D. E. Schaubel
-Code was written by Y. Zhang. Please address all questions or comments to yuan.zhang@pennmedicine.upenn.edu.
+Code was written by Y. Zhang. Please address all questions or comments to yzhang@uthsc.edu.
 
 The code was written/evaluated in R with the following software information:
 R version 4.2.2 (2022-10-31 ucrt)
